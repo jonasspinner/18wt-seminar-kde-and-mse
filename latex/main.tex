@@ -1,0 +1,305 @@
+\documentclass{article}
+
+
+\usepackage[utf8]{inputenc}		% for special characters
+\usepackage[english]{babel}
+%\usepackage[T1]{fontenc}		% for correct use of western european characterfonts
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{natbib}
+\usepackage{amssymb}
+
+
+
+
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+% keine "End"-Statements in Algorithmen
+\algtext*{EndWhile}
+\algtext*{EndIf}
+\algtext*{EndFor}
+\algtext*{EndProcedure}
+\algtext*{EndFunction}
+
+\algblock[CLASS]{Class}{EndClass}
+\algblockdefx[CLASS]{Class}{EndClass}%
+[1]{\textbf{class} #1}%
+{\textbf{end}}%
+\algtext*{EndClass}
+
+
+
+\usepackage{listings}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}	
+	
+\lstset{language=Matlab,%
+	%basicstyle=\color{red},
+	breaklines=true,%
+	%morekeywords={matlab2tikz},
+	keywordstyle=\color{blue},%
+	% morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+	identifierstyle=\color{black},%
+	stringstyle=\color{mylilas},
+	commentstyle=\color{mygreen},%
+	showstringspaces=false,%without this there will be a symbol in the places where there is a space
+	numbers=left,%
+	numberstyle={\tiny \color{black}},% size of the numbers
+	numbersep=9pt, % this defines how far the numbers are from the text
+	%emph=[1]{for,end,break},emphstyle=[1]\color{blue}, %some words to emphasise
+	%emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+
+\setlength{\parskip}{\baselineskip}
+%\setlength{\parindent}{0pt}%
+
+%\setlength{\parindent}{2em}
+%\setlength{\parskip}{1em}
+%\renewcommand{\baselinestretch}{1.5}
+
+
+\begin{document}
+
+\title{Kernel Density Estimates and Mean-Shift Clustering}
+\author{Jonas Spinner\thanks{jonas.spinner@student.kit.edu} -- 1927895\\
+	Analytics and Statistics\\
+	KIT -- Karlsruhe Institute of Technologie}
+\date{\today}
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+
+\begin{abstract}
+Kernel density estimation is widely used for nonparametric data analysis and one of the main ideas behind the mean-shift algorithm. The mean-shift algorithm is a clustering algorithm with 
+\end{abstract}
+
+\section{Introduction}
+
+In this seminar paper I am going to discuss the method of kernel density estimation (KDE) and it's use in the mean-shift clustering algorithm (MSC). Clustering is one of the main tasks in Machine-Learning and MSC has many applications, mainly in image segmentation. The mean-shift algorithm is an non-parametric approach which allows a wide range of data distributions without imposing prior knowledge.
+
+
+\section{Kernel Density Estimation}
+
+% Some methods and algorithms require a probability density function (pdf) of the distribution but only samples are available.
+
+The goal of density estimation is estimating the probality density of $p$, given samples $\{\bm{x}_i\}_{i=1}^n$ in $\mathbb{R}^d, \bm{x} \sim p(\bm{x})$.
+
+
+Histograms estimate the probability distribution by bucketing the samples and counting the proportion of samples which fall in each bucket.
+
+The \textit{kernel density estimate} is defined as
+
+\[
+f(x) = \frac{1}{nh^d} \sum_{i=1}^n K\left(\frac{\bm{x} - \bm{x}_i}{h} \right)
+\]
+
+\subsection{Popular Kernels}
+
+% Kernels:
+% uniform, triangular, biweight, triweight, Epanechnikov, normal, and others
+
+% Estimators:
+% Nadaraya-Watson kernel-weighted average
+
+A general Kernel is a function $K : \mathbb{R}^d \rightarrow \mathbb{R}$ satisfying the following properties. See \citep{Comaniciu.2002} and \citep[p.~95]{Wand.1995}.
+
+\[
+\int_{\mathbb{R}^d} K(\bm{x})\mathrm{d}\bm{x} = 1
+\]
+
+\[
+\int_{\mathbb{R}^d} \bm{x} K(\bm{x})\mathrm{d}\bm{x} = \bm{0}
+\]
+
+\[
+\lim_{\lVert \bm{x} \rVert \rightarrow \infty}  \lVert \bm{x} \rVert^d K(\bm{x})\mathrm{d}\bm{x} = 0
+\]
+
+\[
+\int_{\mathbb{R}^d} \bm{x} \bm{x}^T K(\bm{x})\mathrm{d}\bm{x} = c_K \bm{I}
+\]
+
+\[
+K^P(\bm{x}) = \prod_{i=1}^n K_1(\bm{x}_i)
+\]
+
+\[
+K^S(\bm{x}) = a_{k,d} K_1(\lVert \bm{x} \rVert)
+\]
+
+\begin{table}[]
+	\begin{tabular}{lll}
+		\hline
+		Name & Formula & Support \\ \hline
+		Uniform & $K(\bm{x}) = \frac{1}{2}$ & $\lVert \bm{x} \rVert \leq 1$ \\
+		Triangluar & $K(\bm{x}) = 1 - \lVert \bm{x} \rVert$ & $\lVert \bm{x} \rVert \leq 1$ \\
+		Biweight &  &  \\
+		Triweight &  &  \\
+		Epanechnikov &  &  \\
+		&  & 
+	\end{tabular}
+\end{table}
+
+\subsection{Bandwidth Selection}
+
+One of the main challenges in using the kernel density estimator in practice is the choice of the bandwidth.
+
+
+\section{Mean Shift Clustering}
+
+Clustering is one of the main machine learning tasks, concerned with grouping objects $\{x_i\}_{i=1}^n$ into clusters $C_j$ resulting in a clustering $\{ C_j \}_{j=1}^K$.
+
+\subsection{Different clustering notions}
+
+There are many different notions of what a good clustering is and what a form a cluster takes. These different notions result in different clustering algorithmns. One class of clustering algorithms is centroid based clustering. Each cluster is represented by a representative called centroid. For example the representative of a K-Means clustering is the mean of the cluster $m_j := \frac{1}{\lvert C_j \rvert} \sum_{x_i \in C_j} x_i$.
+
+Another way clustering algorithms can be differentiated is wheter of not the amount of clusters is given as an input to the algorithm or not. For example the K-Means algorithm searches for exactly $K$ clusters. But there are also other notions of a cluster center or representative. One is the added restriction, that the center is itself a data object or atleast "looks like" one. The latter is covered by using representatives which are likely also a data object. That's the core of the mean shift clustering algorithm. It estimates the underlying density of the data objects and searches for points which high relative probability. Or in other words it identifies the modes of the estimated density.
+
+That leaves open on how to estimate the density.
+
+\subsection{The algorithm}
+
+%From wikipedia
+%2.1	Connectivity-based clustering (hierarchical clustering)
+%2.2	Centroid-based clustering
+%2.3	Distribution-based clustering
+%2.4	Density-based clustering
+
+
+\begin{algorithmic}
+\Function{MeanShift}{$\bm{x}_1, ..., \bm{x}_n : \mathbb{R}^d$}
+	\State $\bm{Z} = \bm{X} : \mathbb{R}^{d\times n}$
+	\Repeat
+		\State $\bm{W} = (\exp(-\frac{1}{2} \lVert (\bm{x}_i - \bm{x}_j) / \sigma \rVert^2))_{i,j = 1..n}$
+		\State $\bm{D} = \text{diag}(\sum_i \bm{W}_{ij})$
+		\State $\bm{Q} = \bm{W} \bm{D}^{-1} : \mathbb{R}^{n\times n}$
+		\State $\bm{Z} = \bm{X} \bm{Q} : \mathbb{R}^{d\times n}$
+	\Until{\text{stop}}
+	\State \Return \Call{ConnectedComponents}{$\{\bm{z}_i\}_{i=1}^n, \varepsilon$}
+\EndFunction
+\end{algorithmic}
+
+\begin{algorithmic}
+	\Function{MeanShift}{$\bm{x}_1, ..., \bm{x}_n : \mathbb{R}^d$}
+	\For{$i = 1..n$}
+		\State $\bm{x} = \bm{x}_i$
+		\Repeat
+			\State $\forall n: p(i \mid \bm{x}) = \frac{\exp(-\frac{1}{2} \lVert (\bm{x} - \bm{x}_i) / \sigma \rVert^2)}{\sum_{j=1}^n \exp(-\frac{1}{2} \lVert (\bm{x} - \bm{x}_j) / \sigma \rVert^2)}$
+			\State $\bm{x} = \sum_{i=1}^n p(i \mid \bm{x}) \bm{x}_i$
+		\Until{\text{stop}}
+		\State $\bm{z}_i = \bm{x}$
+	\EndFor
+	\State \Return \Call{ConnectedComponents}{$\{\bm{z}_i\}_{i=1}^n, \varepsilon$}
+	\EndFunction
+\end{algorithmic}
+
+
+\subsection{Problems}
+
+
+\section{Application}
+
+The main application for the mean shift clustering is image segmentation. Although the raw image data in the RGB-colorspace (red, green, blue) can be used, it is often not disereable. A human percieves distances of colors differently than the RGB-colorspace indicates. For that reason the image is often transformed in a more suitable colorspace, for example the L*u*v*-colorspace.
+
+\[
+L*
+\]
+
+Another aspect is the spatial coherence of the clusters in the image. Two pixels with the same color, but in widely different parts of the image would be put in the same cluster. That can be prevented by adding imagespace information to the pixels. 
+
+\subsection{Experiments}
+
+
+
+\subsection{Evaluation and Comparison}
+
+\section{Summary}
+
+
+\bibliographystyle{agsm}
+\bibliography{KDEaMSC}
+
+
+\appendix
+
+
+\section{Code}
+
+\begin{lstlisting}
+function [A, C] = mean_shift(X, kernel, epsilon)
+    tol = 1e-3; max_iter = 1000;
+	
+    Z = X;
+    for t = 1:max_iter        
+        W = apply_kernel(X, Z, kernel);
+        D = diag(sum(W, 1));
+        Q = W * D^(-1);
+        Z_next = X * Q;
+
+        % stop criteria
+        if (max(abs(Z_next - Z), [], 'all') < tol)
+            break
+        end
+    Z = Z_next;
+    end
+
+    [A, C] = connected_component(Z, epsilon);
+end
+\end{lstlisting}
+
+
+\section{Notation}
+
+Data
+
+\[
+n\qquad \text{vs.} \qquad N
+\]
+
+\[
+x\qquad \text{vs.} \qquad \bm{x}
+\]
+
+\[
+x_i\qquad \text{vs.} \qquad x^{(i)}
+\]
+
+Kernels
+
+\[
+\hat{f}(x)\qquad \text{vs.} \qquad \hat{p}(x)
+\]
+
+\[
+\hat{f}_h(x) = \frac{1}{n} \sum_{i=1}^n K_h(x - x_i)
+\]
+
+\[
+\hat{f}_h(x) = \frac{1}{nh} \sum_{i=1}^n K\biggl(\frac{x - x_i}{h}\biggr)\qquad \text{vs.} \qquad \hat{f}_h(x) = \frac{1}{nh} \sum_{i=1}^n K\left(\frac{x - x_i}{h}\right)
+\]
+
+Radial Kernel
+
+\[
+\hat{f}_h(\bm{x}) = \frac{1}{n} \sum_{i=1}^{n} K_h(\norm{\bm{x} -\bm{x}_i})
+\]
+
+Product Kernel
+
+\[
+\hat{f}_h(\bm{x}) = \frac{1}{n} \sum_{i=1}^{n} \prod_{j=1}^d K_{h_j}(\bm{x}_j -\bm{x}_{ij})\qquad \text{vs.} \qquad \hat{f}(\bm{x}) = \frac{1}{n} \sum_{i=1}^{n} \prod_{j=1}^d K_{h_j}(\bm{x}_j -\bm{x}_j^{(i)})
+\]
+
+
+\end{document}
