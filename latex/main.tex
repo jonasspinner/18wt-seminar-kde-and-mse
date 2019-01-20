@@ -28,26 +28,24 @@
 
 
 
+\usepackage{caption}
+\DeclareCaptionType{code}[Code Listing][List of Code Listings] 
+
 \usepackage{listings}
-\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
-\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
-\definecolor{mylilas}{RGB}{170,55,241}	
+\usepackage{color}
+\definecolor{matlabgreen}{RGB}{28,172,0}
+\definecolor{matlabpurple}{RGB}{170,55,241}	
 	
-\lstset{language=Matlab,%
-	%basicstyle=\color{red},
-	breaklines=true,%
-	%morekeywords={matlab2tikz},
-	keywordstyle=\color{blue},%
-	% morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
-	identifierstyle=\color{black},%
-	stringstyle=\color{mylilas},
-	commentstyle=\color{mygreen},%
-	showstringspaces=false,%without this there will be a symbol in the places where there is a space
-	numbers=left,%
-	numberstyle={\tiny \color{black}},% size of the numbers
-	numbersep=9pt, % this defines how far the numbers are from the text
-	%emph=[1]{for,end,break},emphstyle=[1]\color{blue}, %some words to emphasise
-	%emph=[2]{word1,word2}, emphstyle=[2]{style},    
+\lstset{language=Matlab,
+	breaklines=true,
+	keywordstyle=\color{blue},
+	identifierstyle=\color{black},
+	stringstyle=\color{matlabpurple},
+	commentstyle=\color{matlabgreen},
+	showstringspaces=false,
+	numbers=left,
+	numberstyle={\color{black}},
+	numbersep=9pt
 }
 
 
@@ -83,6 +81,10 @@
 \listoftables
 
 \listofalgorithms
+
+%\lstlistoflistings
+\listofcodes
+
 
 \newpage
 
@@ -200,7 +202,7 @@ The \textbf{uniform kernel} is defined as being constant in the unit hypersphere
 		0 & \text{else}
 	\end{cases}\text{,}
 \end{equation}
-where $\text{vol}(S_d) = \pi^{d/2}\Gamma((d+2)/2)^{-1}$ is the volume of the d-dimensional hypersphere. If $d=1$ then $\text{vol}(S_d)=2$. The corresponding profile $k_U$ is
+where $\text{vol}(S_d) = \pi^{d/2}\Gamma((d+2)/2)^{-1}$ is the volume of the d-dimensional hypersphere with $\Gamma(\cdot)$ being the gamma function. If $d=1$ then $\text{vol}(S_d)=2$. The corresponding profile $k_U$ is
 \begin{equation}
 	k_U(u) = \begin{cases}
 		1 & \text{for } 0 \leq u \leq 1\\
@@ -509,27 +511,23 @@ We introduced general kernel density estimates and presented popular choices for
 
 \section{Code}
 
-\begin{lstlisting}
-function [A, C] = mean_shift(X, kernel, epsilon)
-    tol = 1e-3; max_iter = 1000;
-	
-    Z = X;
-    for t = 1:max_iter        
-        W = apply_kernel(X, Z, kernel);
-        D = diag(sum(W, 1));
-        Q = W * D^(-1);
-        Z_next = X * Q;
+\begin{code}
+	\lstinputlisting[language=Matlab]{../src/mean_shift3.m}
+	\caption[mean\_shift]{Mean shift}
+	\label{code:mean_shift}
+\end{code}
 
-        % stop criteria
-        if (max(abs(Z_next - Z), [], 'all') < tol)
-            break
-        end
-    	Z = Z_next;
-    end
+\begin{code}
+	\lstinputlisting[language=Matlab]{../src/connected_component.m}
+	\caption[connected\_component]{Connected component}
+	\label{code:connected_component}
+\end{code}
 
-    [A, C] = connected_component(Z, epsilon);
-end
-\end{lstlisting}
+\begin{code}
+	\lstinputlisting[language=Matlab]{../src/estimate_bandwidth.m}
+	\caption[estimate\_bandwidth]{Estimate bandwidth}
+	\label{code:estimate_bandwidth}
+\end{code}
 
 
 \section{Notation}

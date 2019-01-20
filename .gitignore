@@ -78,3 +78,6 @@ __pycache__/
 # algorithms
 *.alg
 *.loa
+# listings
+*.locode
+*.lol
