@@ -1,4 +1,4 @@
-function [A, C] = mean_shift2(X, kernel, epsilon)
+function [A, C] = mean_shift_iter_form(X, kernel, epsilon)
     tol = 1e-2;
     max_iter = 100;
     

@@ -1,18 +1,20 @@
 function [A, C] = connected_component(X, epsilon)
-    % Performes data pruning. An implicit neighborhood graph is constructed
-    % in which x_i and x_j are connected if ||x_i - x_j|| < epsilon. Then
-    % points are randomly chosen and all its neighbors are assigned to the
-    % same cluster.
+    % Performes data pruning. An implicit neighborhood
+    % graph is constructed in which x_i and x_j are
+    % connected if ||x_i - x_j|| < epsilon. Then points
+    % are randomly chosen and all its neighbors are
+    % assigned to the same cluster.
     %
     % INPUTS:
     %         X - an d by n array with data points
     %   epsilon - the distance in which points are merged
     % OUTPUTS:
-    %         A - an 1 by n array with cluster indices
-    %         C - an d by max(A) array with cluster representatives
-    [d, N] = size(X);
-    A = zeros(1, N);
-    C = zeros(d, N);
+    %         A - an n by 1 array with cluster indices
+    %         C - an d by max(A) array with cluster
+    %             representatives
+    [d, n] = size(X);
+    A = zeros(n, 1);
+    C = zeros(d, n);
     % the number of connected components found yet
     c = 0;
     
