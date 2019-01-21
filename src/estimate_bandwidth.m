@@ -1,11 +1,12 @@
 function h = estimate_bandwidth(X, quantile)
-    % Bandwidth estimation for kernel density estimates. The mean distance
-    % of each data point to its (quantile * n)-nearest neighbor is used. A
-    % quantile value of 0.5 means the median value of all pairwise
+    % Bandwidth estimation for kernel density estimates.
+    % The mean distance of each data point to its
+    % (quantile * n)-nearest neighbor is used. A quantile
+    % value of 0.5 means the median value of all pairwise
     % distances is used.
     % 
     % INPUTS:
-    %          X - an d by n array with data points
+    %          X - a d by n matrix with data points
     %   quantile - the quantile used; must be in [0, 1]
     %              the default value is 0.3
     % OUTPUTS:

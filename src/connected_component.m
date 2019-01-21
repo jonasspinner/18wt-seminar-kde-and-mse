@@ -6,11 +6,11 @@ function [A, C] = connected_component(X, epsilon)
     % assigned to the same cluster.
     %
     % INPUTS:
-    %         X - an d by n array with data points
+    %         X - a d by n matrix with data points
     %   epsilon - the distance in which points are merged
     % OUTPUTS:
-    %         A - an n by 1 array with cluster indices
-    %         C - an d by max(A) array with cluster
+    %         A - a n by 1 vector with cluster indices
+    %         C - a d by max(A) matrix with cluster
     %             representatives
     [d, n] = size(X);
     A = zeros(n, 1);

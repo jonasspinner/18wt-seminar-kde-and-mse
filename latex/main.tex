@@ -235,32 +235,50 @@ and its profile $k_G$ is
 \end{equation}
 
 
-
-\begin{table}[]
+\begin{table}
 	\centering
-	\begin{tabular}{lll}
-		\hline
-		Name & Formula & Support \\ \hline
-		Uniform & $k(x) = \frac{1}{2}$ & $[-1, 1]$ \\
-		Epanechnikov & $k(x) = \frac{3}{4} (1 - x^2)$ & $[-1, 1]$ \\
-		Biweight & $k(x) = \frac{15}{16} (1 - x^2)^2$ & $[-1, 1]$ \\
-		Triweight & $k(x) = \frac{35}{32} (1 - x^2)$ & $[-1, 1]$ \\
-		Gaussian & $k(x) = \frac{1}{\sqrt{2\pi}}\exp(-\frac{u^2}{2}) $ & $(-\infty, \infty)$
+	\begin{tabular}{lllll}
+		Name & Profile support & $k(u)$ & $-k'(u)$ & $K(\bm{x})$ \\ \hline
+		Uniform & $u \in [0, 1]$ & $1$ & $0$ & $\text{vol}(S_d)^{-1}$ \\
+		Epanechnikov & $u \in [0, 1]$ & $1 - u$ & $1$ & $\frac{1}{2} \text{vol}(S_d)^{-1} (d+2) \left(1 - \norm{\bm{x}}^2\right)$\\
+		Biweight & $u \in [0, 1]$ & $(1 - u)^2$ & $2 (1 - u)$ & $\propto \left(1 - \norm{\bm{x}}^2\right)^2$ \\
+		Triweight & $u \in [0, 1]$ & $(1 - u)^3$ & $3 (1 - u)^2$ & $\propto \left(1 - \norm{\bm{x}}^2\right)^3$ \\
+		Gaussian & $u \in [0, \infty)$ & $\exp\left(-\frac{1}{2}u\right)$ & $\frac{1}{2}\exp\left(-\frac{1}{2}u\right)$ & $(2\pi)^{-d/2} \exp\left(-\frac{1}{2}\norm{\bm{x}}^2\right)$
 	\end{tabular}
-	\caption{Popular kernels}
-	\label{tab:popular-kernels}
+	\caption[Popular kernel functions]{Popular kernel functions. The kernel functions listed here are all radially symmetric kernels. By looking at the profiles $k(u)$ and the negated derivative $-k'(u)$ we can see the corresponding shadows (see section \ref{sec:mean-shift-vector-properties}). $\text{vol}(S_d)$ is the volume of a $d$-dimensional hypershere and the normalization constants for the biweight and triweight kernels are omitted.}
+	\label{tab:popular-kernel-functions}
 \end{table}
+
 
 \subsection{Bandwidth Selection}
 
-One of the main challenges in using the kernel density estimator in practice is the choice of the bandwidth.
+One of the main challenges in using the kernel density estimate in practice is the choice of the bandwidth. The univariate case has a rich theoretical background, but the multivariate case is more problematic. \citep[section 3.1]{Comaniciu.2002} lists some general approaches for bandwidth selection.
+
+\begin{itemize}
+	\item The stability of the clustering in respect to the bandwidth parameter $h$ is analysed. The number of resulting clusters $K$ is stated as a function of the bandwidth, $K(h)$. Then the midpoint of the largest range for which $K(h)$ stays constant is chosen.
+	\item Some objective function is used for evaluating the clustering quality. The bandwidth which maximizes the objective function is chosen.
+	\item When the desired number of clusters is known, the bandwidth can be varied to accomplished the desired number. This approach can be modified to ignore smaller clusters.
+	\item Another approach is to estimate the bandwidth by the mean $K$ nearest neighbor distance between the data points. $K$ is set to be a percentage of the whole dataset, for example 30 \%. The Python library scikit-learn from \cite{Pedregosa.2011} implements this approach in the method \texttt{estimate\_bandwidth}. In section \ref{sec:application} we implement this method in Matlab and use it in our experiments. The code can be found in Code Listing \ref{code:estimate_bandwidth}.
+\end{itemize}
+
+\begin{equation}
+\hat{f}_{-i}(\bm{x}) = \frac{1}{(n - 1)h^d} \sum_{j \neq j} K\left(\frac{\bm{x}_j - \bm{x}_j}{h} \right) \qquad \bm{x} \in \mathbb{R}^d
+\end{equation}
+
+\begin{align}
+\text{MLCV}(h) &= \frac{1}{n} \sum_{i=1}^n \log \hat{f}_{-i}(\bm{x}_i) \\
+&= \frac{1}{n} \sum_{i=1}^n \log \left(\sum_{j \neq j}^n K\left(\frac{\bm{x}_j - \bm{x}_j}{h} \right)\right) - \log(n - 1) - d \log(h)
+\end{align}
+
+
+
 
 
 \section{Mean Shift Clustering}
 
 Clustering is one of the main machine learning tasks, concerned with grouping objects $\{x_i\}_{i=1}^n$ into clusters $C_j$ resulting in a clustering $\{ C_j \}_{j=1}^K$.
 
-\subsection{A general perspective on clustering algorithms}
+\subsection{Clustering algorithms}
 
 \textit{introduction}
 
@@ -279,59 +297,57 @@ The mean shift algorithm defines its cluster representatives by the modes of the
 
 Another way clustering algorithms can be differentiated is whether of not the amount of clusters is given as an input to the algorithm or not. For example the $K$-Means algorithm searches for exactly $K$ clusters. But there are also other notions of a cluster center or representative. One is the added restriction, that the center is itself a data object or atleast ``looks like'' one. The latter is covered by using representatives which are likely also a data object. That's the core of the mean shift clustering algorithm. It estimates the underlying density of the data objects and searches for points which high relative probability. Or in other words it identifies the modes of the estimated density.
 
-That leaves open on how to estimate the density.
 
-\subsection{Density gradient estimation}
+\subsection{Density gradient estimation} \label{sec:density-gradient-estimation}
 
-Before looking at the algorithm itself, we are going to derive the name giving mean shift vector by estimating the density gradient with the gradient of the density estimate. This subsection is based on \cite{Comaniciu.2002} and follows its notation.
+Before we look at the specifics of the mean shift algorithm in section \ref{sec:mean-shift-algorithm}, we look at an estimation of the density gradient and derive the mean shift vector. This section is based on \cite{Comaniciu.2002} and follows its notation.
 
-As we have discussed in the previous subsection, one way to define a cluster is by the modes of the the density. This is notion that is the main point of this paper. The task is to find the points $\bm{x}$ where the density gradient vanishes, $\nabla f(\bm{x}) = 0$.
-
-The density is estimated with kernel density estimation. Recall that the density estimate is formulated as
-
+By defining clusters with the modes of a density function the clustering task becomes a mode finding task where we search for $\bm{x}$ where the density gradient is zero, $\nabla f(\bm{x}) = 0$. As we have no knowledge about the real density $f(\bm{x})$, we have to use an estimate. Recall that the kernel density estimate is defined as
 \begin{equation}
 	\hat{f}(\bm{x}) = \frac{1}{nh^d} \sum_{i=1}^n K\left(\frac{\bm{x} - \bm{x}_i}{h} \right)\text{.}
 	\label{eq:kernel-density-estimate-2}
 \end{equation}
 
-A natural way to estimate the density gradient is to use the gradient of the density estimate. Formally we write
-
+We estimate the density gradient $\nabla f(\bm{x})$ by the gradient of the density estimate. Formally we write
 \begin{equation}
 	\hat\nabla f(\bm{x}) \equiv \nabla \hat{f}(\bm{x}) = \frac{1}{nh^d} \sum_{i=1}^n \nabla K\left(\frac{\bm{x} - \bm{x}_i}{h} \right)\text{.}
 	\label{eq:kernel-density-gradient-estimate}
 \end{equation}
 
-
-To simplify the coming derivation we are going to concentrate on a class of kernels, \textbf{radially symmetric kernels}. These can be written as
-
+For simplification we are going to concentrate on the class of \textbf{radially symmetric kernels}. These can be written as
 \begin{equation}
 	K(\bm{x}) = c_{k,d} k(\norm{\bm{x}}^2)
 \end{equation}
 
 where $k : [0, \infty]) \rightarrow [0, \infty)$ is called the \textbf{profile} of $K$, and $c_{k,d}$ is a constant which ensures that $K(\bm{x})$ integrate to $1$. The most common kernels belong to this class of functions.
 
-Because we are going to use different kernel density estimates, we explicit state the used bandwidth $h$ and kernel $K$ as a subscript on the kernel density estimate $\hat{f}_{h,K}(\bm{x})$. The kernel density estimate can now be formulated as
+Because we are going to use different kernel density estimates, we explicit state the used bandwidth $h$ and kernel $K$ of the kernel density estimate as $\hat{f}_{h,K}(\bm{x})$. The kernel density estimate can now be formulated as
 \begin{equation}
-	\hat{f}_{h,K}(\bm{x}) = \frac{c_{k,d}}{nh^d} \sum_{i=1}^n k\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\text{,}
-	\label{eq:kernel-density-estimate-radial-symetric}
+	\hat{f}_{h,K}(\bm{x}) = \frac{c_{k,d}}{nh^d} \sum_{i=1}^n k\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)
 \end{equation}
-and its gradient is
+and its gradient as
 \begin{equation}
 	\nabla \hat{f}_{h,K}(\bm{x}) = \frac{2c_{k,d}}{nh^{d+2}} \sum_{i=1}^n (\bm{x} - \bm{x}_i)k'\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\text{.}
-	\label{eq:kernel-density-gradient-estimate-radial-symetric}
 \end{equation}
 
-With the substitution $g(u) = -k'(u)$ and reordering we can reformulate the gradient to
+With the substitution $g(u) = -k'(u)$ and reordering, we can formulate the gradient as
 \begin{equation}
 	\nabla \hat{f}_{h,K}(\bm{x}) = \frac{2c_{k,d}}{nh^{d+2}} \left[\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\right] \left[\frac{\sum_{i=1}^n \bm{x}_i g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)}{\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)} - \bm{x}\right]\text{.}
+	\label{equ:kde-gradient-3-terms}
 \end{equation}
 
-The expression can be decomposed into several terms. The last term is called mean shift vector,
+We can analyse the terms separately. The last term is called \textbf{mean shift vector}
 \begin{equation}
 	\bm{m}(\bm{x}) = \frac{\sum_{i=1}^n \bm{x}_i g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)}{\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)} - \bm{x}\text{.}
 \end{equation}
 
-The first two factors can be decomposed into a scaling factor and a kernel density estimate with the kernel $G(\bm{x}) = c_{g,d} g(\norm{\bm{x}}^2)$
+We derived an estimate for the density gradient and introduced the mean shift vector $\bm{m}(\bm{x})$. In section \ref{sec:mean-shift-vector-properties} we are going to further analyse the properties of $\bm{m}(\bm{x})$. In section \ref{sec:mean-shift-algorithm} we are finally presenting the mean shift algorithm and a short discussion follows in section \ref{sec:mean-shift-discussion}.
+
+
+
+\subsection{Properties of the mean shift vector and kernel shadows} \label{sec:mean-shift-vector-properties}
+
+We can further analyse the equation \ref{equ:kde-gradient-3-terms} and relate the mean shift vector to an kernel density estimate. The first two factors can be decomposed into a scaling factor and a kernel density estimate with the kernel $G(\bm{x}) = c_{g,d} g(\norm{\bm{x}}^2)$
 \begin{align}
 	\frac{2c_{k,d}}{nh^{d+2}} \left[\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\right] &= \frac{2c_{k,d}}{h^2c_{g,d}} \left[\frac{c_{g,d}}{nh^d} \sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right) \right]\\
 	&= \frac{2c_{k,d}}{h^2c_{g,d}} \hat{f}_{h,G}(\bm{x})\text{.}
@@ -344,91 +360,70 @@ With these equations we can reformulate the density gradient estimate $\nabla \h
 
 That allows us to write the mean shift vector as a normalized gradient of the kernel density estimate $\nabla \hat{f}_{h,K}(\bm{x})$
 \begin{equation}
-	\bm{m}(x) = \frac{h^2c_{g,d}}{2c_{k,d}} \frac{\nabla \hat{f}_{h,K}(\bm{x})}{\hat{f}_{h,G}(\bm{x})}
+	\bm{m}(x) = \frac{h^2c_{g,d}}{2c_{k,d}} \frac{\nabla \hat{f}_{h,K}(\bm{x})}{\hat{f}_{h,G}(\bm{x})}\text{.}
 \end{equation}
 
-
-\begin{align}
-	\nabla \hat{f}_{h,K}(\bm{x}) &= \frac{2c_{k,d}}{nh^{d+2}} \sum_{i=1}^n (\bm{x}_i - \bm{x})g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\notag\\
-	&= \frac{2c_{k,d}}{nh^{d+2}} \sum_{i=1}^n (\bm{x}_i - \bm{x}) w_i\notag\\
-	&= \frac{2c_{k,d}}{nh^{d+2}} \sum_{i=1}^n \bm{x}_i w_i - \bm{x} \sum_{i=1}^n w_i\notag\\
-	&= \frac{2c_{k,d}}{nh^{d+2}} \left[\sum_{i=1}^n w_i\right] \left[\frac{\sum_{i=1}^n \bm{x}_i w_i}{\sum_{i=1}^n w_i} - \bm{x}\right]\notag\\
-	&= \frac{2c_{k,d}}{nh^{d+2}} \left[\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\right] \left[\frac{\sum_{i=1}^n \bm{x}_i g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)}{\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)} - \bm{x}\right]\notag\\
-	&= \frac{2c_{k,d}}{h^2c_{g,d}} \left[\frac{c_{g,d}}{nh^d} \sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right) \right] \bm{m}(\bm{x})\notag\\
-	&= \frac{2c_{k,d}}{h^2c_{g,d}} \hat{f}_{h,G}(\bm{x}) \bm{m}(\bm{x})\notag
-\end{align}
-
-
+This observation means that the mean shift vector calculated with the kernel $G$ points in the gradient direction of the kernel density estimate calculated with the kernel $K$. For the kernels $G(\bm{x}) \propto g(\norm{\bm{x}}^2)$ and $K(\bm{x}) \propto k(\norm{\bm{x}}^2)$ if
 \begin{equation}
-	\bm{m}(x) = \frac{h^2c_{g,d}}{2c_{k,d}} \frac{\nabla \hat{f}_{h,K}(\bm{x})}{\hat{f}_{h,G}(\bm{x})}
+	-k'(u) \propto g(u)
+	\label{equ:shadow-relation}
+\end{equation}
+then we call the kernel $K$ a \textbf{shadow} of kernel $G$.
+
+The gaussian kernel is its own shadow. Recall that the profile of the gaussian kernel is $k_G(u) = \exp\left(-\frac{1}{2}u\right)$. It holds that $-k_G'(u) \propto k_G(u)$.
+
+A shadow of the uniform kernel is the Epanechnikov kernel, because the profile of the Epanechnikov kernel is $k_E(u) = (1 - u) \mathbbm{1}\{u \in [0, 1]\}$ and $-k_E'(u) = k_U(u) = \mathbbm{1}\{u \in [0, 1]\}$.
+
+The mean shift vector $\bm{m}(\bm{x})$ calculated with the kernel $G$ is therefore not the gradient direction of an kernel density estimate calculated with $G$, but of the kernel density estimate calculated with a more ``complex'' kernel, the shadow of $G$.
+
+The mean shift vector $\bm{m}(\bm{x})$ inhibits some nice properties that makes it easy to compute. In section 2 we required that the kernel must integrate to $1$. This requirement can be dropped because the normalizing constants cancel in the expression.
+
+
+
+\subsection{The mean shift algorithm} \label{sec:mean-shift-algorithm}
+
+With the provided prerequisites the mean shift algorithm can be quickly stated. Recall that the mean shift vector is
+\begin{equation}
+\bm{m}(\bm{x}) = \frac{\sum_{i=1}^n \bm{x}_i g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)}{\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)} - \bm{x}\text{.}
 \end{equation}
 
-\begin{align}
-	k_N(u) &= \exp\left(-\frac{1}{2}u\right)\\
-	-k_N'(u) &= \frac{1}{2}\exp\left(-\frac{1}{2}u\right) \propto k(u)\\
-	K_N(\bm{x}) &= (2\pi)^{-d/2} \exp\left(-\frac{1}{2}\norm{\bm{x}}^2\right)
-\end{align}
+For each $\bm{x}_i$ we perform the iterative procedure
+\begin{equation}
+\bm{x}^{(t+1)} = \bm{x}^{(t)} + \bm{m}(\bm{x}^{(t)})\text{,}\qquad t = 1, 2, ...
+\end{equation}
+where $\bm{x}^{(1)} = \bm{x}_i$. The procedure is stopped when $\bm{x}^{(t)}$ converges or at least the difference $\norm{\bm{x}^{(t+1)} - \bm{x}^{(t)}}$ is small enough. $\bm{z}_i$ gets assigned the value $\bm{x}^{(t)}$ is converged to.
 
-\begin{align}
-	k_E(u) &= \begin{cases}
-		1 - u & 0 \leq u \leq 1 \\
-		0 & 1 < u
-	\end{cases}\\
-	-k_E'(u) &= \begin{cases}
-		1 & 0 \leq u \leq 1 \\
-		0 & 1 < u
-	\end{cases}\\
-	K_E(\bm{x}) &= \begin{cases}
-	\frac{1}{2} c_d^{-1} (d+2) (1 - \norm{\bm{x}}^2) & \norm{\bm{x}} \leq 1 \\
-	0 & \text{else}
-	\end{cases}
-\end{align}
+After calculating $\bm{z}_i$ for each $\bm{x}_i$, the points where $\bm{z}_i = \bm{z}_j$ are assigned to the same cluster. As before we relax this by assigning the same cluster when $\norm{\bm{z}_i - \bm{x}_j} < \varepsilon$ holds.
 
-\begin{table}
-	\begin{tabular}{lllll}
-		Name & Support & $k(u)$ & $-k'(u)$ & $K(\bm{x})$ \\ \hline
-		Epanechnikov & $[0, 1]$ & $1 - u$ & $1$ & $\frac{1}{2} c_d^{-1} (d+2) (1 - \norm{\bm{x}}^2)$\\
-		Gaussian & $(-\infty, \infty)$ & $\exp\left(-\frac{1}{2}u\right)$ & $\frac{1}{2}\exp\left(-\frac{1}{2}u\right)$ & $(2\pi)^{-d/2} \exp\left(-\frac{1}{2}\norm{\bm{x}}^2\right)$\\
-		&&&&
-	\end{tabular}
-\end{table}
+The pseudo code for the mean shift algorithm can be found in Algorithm \ref{alg:mean-shift-algorithm}.
+\begin{algorithm}
+	\begin{algorithmic}[1]
+		\Function{MeanShift}{$\bm{x}_1, ..., \bm{x}_n : \mathbb{R}^d$, $h : \mathbb{R}^+$, $\varepsilon : \mathbb{R}^+$}
+		\For{$i = 1..n$}
+		\State $\bm{x}^{(1)} = \bm{x}_i$, $t=0$
+		\Repeat
+		\State $t = t + 1$
+		\State $\forall j: w_j = \exp(-\frac{1}{2} \norm{(\bm{x}^{(t)} - \bm{x}_j) / h}^2)$
+		\State $\bm{x}^{(t+1)} = (\sum_{j=1}^n w_j)^{-1} \sum_{j=1}^n w_j \bm{x}_j$
+		\Until{$\norm{\bm{x}^{(t+1)} - \bm{x}^{(t)}} < tol$}
+		\State $\bm{z}_i = \bm{x}^{(t+1)}$
+		\EndFor
+		\State \Return \Call{ConnectedComponents}{$\{\bm{z}_i\}_{i=1}^n, \varepsilon$}
+		\EndFunction
+	\end{algorithmic}
+	\caption{Mean-shift algorithm.}
+	\label{alg:mean-shift-algorithm}
+\end{algorithm}
 
+When $G$ is the uniform kernel, the procedure is guaranteed to converge. For the samples $D = \{\bm{x}_i\}_{i=1}^n$ the number of weighted means of the subsets $D' \subseteq D$ is $2^n$. For each iterate $\bm{x}^{(t)}$ there exists some $t_0$ so that $\bm{x}^{(t_0 + t)} = \bm{x}^{(t_0)}$ for $t \geq 0$.
 
-\subsection{The algorithm}
+For the gaussian kernel only convergence for $t \rightarrow \infty$ is guaranteed. (citation needed)
+
 
 The core of the mean shift algorithm is an iterative procedure which acts on a single point $\bm{x}^{(0)}$. For the given point the algorithm finds the corresponding mode of the kernel density estimate ($\hat\nabla f(\bm{x}) = \bm{0}$). Each iteration step the point moves in the direction of the steepest ascent. The iteration stops when the point has converged to a fixed point $\bm{x}^{(t+1)} = \bm{x}^{(t)}$. For the clustering of a dataset, the iteration procedure is performed on each point. The samples used for the kernel density estimate are still fixed to the original dataset.
 
 A variant of the algorithm is the blurring mean shift algorithm. There the kernel density estimate is based on the data points from the previous iteration step.
 
-\begin{equation}
-	\bm{m}(\bm{x}) = \frac{\sum_{i=1}^n \bm{x}_i g(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2)}{\sum_{i=1}^n g(\norm{\frac{\bm{x} - \bm{x}_i^2}{h}})} - \bm{x}
-\end{equation}
-
-
-\begin{equation}
-	\bm{x}^{(t+1)} = \bm{x}^{(t)} + \bm{m}(\bm{x}^{(t)})\text{,}\qquad t = 1, 2, ...
-\end{equation}
-
-%From wikipedia
-%2.1	Connectivity-based clustering (hierarchical clustering)
-%2.2	Centroid-based clustering
-%2.3	Distribution-based clustering
-%2.4	Density-based clustering
-
-%\begin{algorithm}
-%	\caption{Euclid’s algorithm}\label{euclid}
-%	\begin{algorithmic}[1]
-%		\Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
-%		\State $r\gets a\bmod b$
-%		\While{$r\not=0$}\Comment{We have the answer if r is 0}
-%		\State $a\gets b$
-%		\State $b\gets r$
-%		\State $r\gets a\bmod b$
-%		\EndWhile\label{euclidendwhile}
-%		\State \textbf{return} $b$\Comment{The gcd is b}
-%		\EndProcedure
-%	\end{algorithmic}
-%\end{algorithm}
 
 \begin{algorithm}
 	\begin{algorithmic}[1]
@@ -467,7 +462,8 @@ A variant of the algorithm is the blurring mean shift algorithm. There the kerne
 \end{algorithm}
 
 
-\subsection{Discussion}
+
+\subsection{Discussion} \label{sec:mean-shift-discussion}
 
 \textit{Problems}
 
@@ -477,15 +473,19 @@ The algorithm inhabits several problems. Some of them are dependent on the domai
 
 Methods for speedup
 
-\section{Application}
+\section{Application} \label{sec:application}
 
 \textit{image segmentation}
 
-The main application for the mean shift clustering is image segmentation. Although the raw image data in the RGB-colorspace (red, green, blue) can be used, it is often not disereable. A human percieves distances of colors differently than the RGB-colorspace indicates. For that reason the image is often transformed in a more suitable colorspace, for example the L*u*v*-colorspace.
+The main application for the mean shift clustering is image segmentation. Although the raw image data in the RGB color space can be used most problem domains benefit from a transformed feature space. A human perceives distances of colors differently than the RGB-colorspace indicates. For that reason the image is often transformed in a more suitable colorspace, for example the L*u*v*-colorspace.
 
 Another aspect is the spatial coherence of the clusters in the image. Two pixels with the same color, but in widely different parts of the image would be put in the same cluster. That can be prevented by adding imagespace information to the pixels. 
 
 \subsection{Experiments}
+
+In this section we apply the mean shift algorithm to different tasks. For this we implemented the mean shift algorithm in Matlab. The code for the method \texttt{mean\_shift} can be found in Code Listing \ref{code:mean_shift}.
+
+\textbf{Basic clustering}
 
 \textit{basic clustering task}
 
@@ -493,13 +493,29 @@ Another aspect is the spatial coherence of the clusters in the image. Two pixels
 
 \textit{dataset description}
 
-\cite{Alpert.2012}
+\textbf{Image segmentation}
+
+We perform an image segmentation task. The dataset is the ``segmentation evaluation database'' from \cite{Alpert.2012}. The dataset consists of 100 images with gray level and color sources. Also human segmentation results are provided.
+
+For the experiment we apply several transformations before running the mean shift procedure. To transform the image data into a suitable feature space we implemented the method \texttt{image\_transform}. The code can be found in Code Listing \ref{code:image_transform}.
+
+\begin{enumerate}
+	\item \textbf{Image rescaling}. This reduces the number of pixels and minimizes the run time.
+	\item \textbf{Color space transformation}. As discussed at the introduction of section \ref{sec:application}, the RGB color space is not suitable for an euclidean distance metric. The CIE 1976 L*,u*,v* color space is build to approximate a perceptually uniform color space. Matlab provides the functionality to perform color space transformations.
+	\item \textbf{Adding spacial features}. Image segmentation benefits from connected patches, but without spacial features, there's no way to respect pixel distance. We add two new features representing the position of the pixel in the image.
+\end{enumerate}
+
+In our experiment we rescale the image so that they have height of 50 pixels. That transformation is needed so that the total number of pixels is small enough for segmentation in reasonable time.
+
+Next to the image rescaling we are also performing other transformations to an feature space which is more suitable for image segmentation. Our approach closely resembles the procedure in \cite{Comaniciu.2002}. A Matlab function \texttt{image\_transform} is provided in the Code Listing \ref{code:image_transform}. The input images are provided in RGB color space. The problem with this color space is that the euclidean distance in RGB values do not translate to the visual distance perceived by humans. The CIE 1976 L*,u*,v* color space is build to approximate a perceptually uniform color space. Matlab provides the functionality to perform color space transformations. Image segmentation tasks also benefit from spacial 
 
 \subsection{Evaluation and Comparison}
 
+To evaluate segmentation results is a difficult task. We are going to present the segmentation results themselves.
+
 \section{Summary}
 
-We introduced general kernel density estimates and presented popular choices for kernels. We classify the mean shift clustering algorithm by it's understanding of a cluster and derive the iteration step coming from the kernel density estimate. We present different applications of the algorithm, mainly classic clustering tasks and 
+We introduced general kernel density estimates and presented popular choices for kernels. We classify the mean shift clustering algorithm by it's understanding of a cluster and derive the iteration step coming from the kernel density estimate. We present different applications of the algorithm, mainly classic clustering tasks and
 
 
 \bibliographystyle{agsm}
@@ -507,12 +523,9 @@ We introduced general kernel density estimates and presented popular choices for
 
 
 \appendix
-
-
 \section{Code}
-
 \begin{code}
-	\lstinputlisting[language=Matlab]{../src/mean_shift3.m}
+	\lstinputlisting[language=Matlab]{../src/mean_shift.m}
 	\caption[mean\_shift]{Mean shift}
 	\label{code:mean_shift}
 \end{code}
@@ -529,48 +542,11 @@ We introduced general kernel density estimates and presented popular choices for
 	\label{code:estimate_bandwidth}
 \end{code}
 
-
-\section{Notation}
-
-Data
-
-\[
-n\qquad \text{vs.} \qquad N
-\]
-
-\[
-x\qquad \text{vs.} \qquad \bm{x}
-\]
-
-\[
-x_i\qquad \text{vs.} \qquad x^{(i)}
-\]
-
-Kernels
-
-\[
-\hat{f}(x)\qquad \text{vs.} \qquad \hat{p}(x)
-\]
-
-\[
-\hat{f}_h(x) = \frac{1}{n} \sum_{i=1}^n K_h(x - x_i)
-\]
-
-\[
-\hat{f}_h(x) = \frac{1}{nh} \sum_{i=1}^n K\biggl(\frac{x - x_i}{h}\biggr)\qquad \text{vs.} \qquad \hat{f}_h(x) = \frac{1}{nh} \sum_{i=1}^n K\left(\frac{x - x_i}{h}\right)
-\]
-
-Radial Kernel
-
-\[
-\hat{f}_h(\bm{x}) = \frac{1}{n} \sum_{i=1}^{n} K_h(\norm{\bm{x} -\bm{x}_i})
-\]
-
-Product Kernel
-
-\[
-\hat{f}_h(\bm{x}) = \frac{1}{n} \sum_{i=1}^{n} \prod_{j=1}^d K_{h_j}(\bm{x}_j -\bm{x}_{ij})\qquad \text{vs.} \qquad \hat{f}(\bm{x}) = \frac{1}{n} \sum_{i=1}^{n} \prod_{j=1}^d K_{h_j}(\bm{x}_j -\bm{x}_j^{(i)})
-\]
+\begin{code}
+	\lstinputlisting[language=Matlab]{../src/image_transform.m}
+	\caption[image\_transform]{Image transform}
+	\label{code:image_transform}
+\end{code}
 
 \newpage
 \section*{Statutory Declaration}

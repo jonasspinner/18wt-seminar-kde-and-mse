@@ -3,14 +3,14 @@ function [A, C, T] = mean_shift(X, kernel, h, epsilon)
     % specified kernel and bandwidth h.
     %
     % INPUTS:
-    %         X - an d by n array of data points
-    %    kernel - the kernel used. 'gaussian' or 'uniform'
+    %         X - an d by n matrix of data points
+    %    kernel - the kernel used. 'gaussian', 'uniform'
     %         h - the bandwidth used
     %   epsilon - the parameter for cluster pruning
     % OUTPUTS:
-    %         A - an n by 1 array of cluster indices
-    %         C - an d by n array of cluster centroids
-    %         T - an n by 1 array of iterations needed
+    %         A - an n by 1 vector of cluster indices
+    %         C - an d by n matrix of cluster centroids
+    %         T - an n by 1 vector of iterations needed
     %             for each data point
     tol = h * 1e-2; max_iter = 100;
     
@@ -21,11 +21,12 @@ function [A, C, T] = mean_shift(X, kernel, h, epsilon)
     for i = 1:n
         x = X(:, i);
         for t = 1:max_iter
+            u = sum(((X - x) / h).^2, 1);
             switch kernel
                 case 'gaussian'
-                    w = exp(-0.5 * sum(((X - x) / h).^2, 1));
+                    w = exp(-0.5 * u);
                 case 'uniform'
-                    w = sum(((X - x) / h).^2, 1) < 1;
+                    w = u < 1;
             end
 
             x_next = X * w' / sum(w);
