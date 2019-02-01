@@ -1,12 +1,10 @@
-function [I] = image_inverse_transform(X, w, h, m, s)
+function [I] = image_inverse_transform(X, n_rows, n_cols, upvpl_mean, upvpl_std)
     X = X(1:3, :);
     
-    X(1, :) = X(1, :) * s(1) + m(1);
-    X(2, :) = X(2, :) * s(2) + m(2);
-    X(3, :) = X(3, :) * s(3) + m(3);
+    X(1:3,:) = X(1:3,:) .* upvpl_std + upvpl_mean;
     
-    T = reshape(X', w, h, 3);
+    T = reshape(X', n_rows, n_cols, 3);
     
-    T = applycform(T, makecform('uvl2xyz'));
+    T = applycform(T, makecform('upvpl2xyz'));
     I = xyz2rgb(T);
 end
