@@ -113,7 +113,7 @@
 \subsection{Definition}
 
 \begin{frame}{The kernel density estimate}
-	The kernel density estimate is defined as:
+	The \textbf{kernel density estimate} is defined as
 	\begin{align*}
 		\hat{f}(\bm{x}) = \frac{1}{n h^d} \sum_{i=1}^{n} K\left(\frac{\bm{x} - \bm{x}_i}{h} \right)
 	\end{align*}
@@ -123,23 +123,37 @@
 		\item $h$ is a \textit{bandwidth parameter}.
 	\end{itemize}
 	\begin{itemize}
-		\item When $\int_{\mathbb{R}^d} K(\bm{x}) dx = 1$ and $K(\bm{x}) \geq 0$ for all $\bm{x}$ then $\hat{f}(\bm{x})$ is a valid probability density function.
+		\item When $\int_{\mathbb{R}^d} K(\bm{x}) d\bm{x} = 1$ and $K(\bm{x}) \geq 0$ for all $\bm{x}$ then $\hat{f}(\bm{x})$ is a valid probability density function.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{The kernel density estimate}
+	\begin{align*}
+		\hat{f}(\bm{x}) = \frac{1}{n h^d} \sum_{i=1}^{n} K\left(\frac{\bm{x} - \bm{x}_i}{h} \right)
+	\end{align*}
+	\includegraphics[width=\textwidth]{figures/kde-kernel-density-estimates}
+	\vspace*{-5mm}
+	\tiny
+	\begin{itemize}
+		\item[(a)] Underlying density.
+		\item[(b)] Histogram.
+		\item[(c)] KDE with uniform kernel.
+		\item[(d)] KDE with gaussian kernel.
 	\end{itemize}
 \end{frame}
 
 
 \subsection{Kernel functions}
 
-
 \begin{frame}{Popular kernel functions}
 	\textbf{Radially symmetric kernel functions} are kernel functions which can be represented as
-	
 	\begin{align*}
 		K(\bm{x}) = c_{k,d}\ k\left(\norm{\bm{x}}^2\right)
 	\end{align*}
 	
 	\begin{itemize}
-		\item $k(u) : [0, \infty) \rightarrow [0, \infty)$ is called the profile of $K$.
+		\item $k(u) : [0, \infty) \rightarrow [0, \infty)$ is called the \textbf{profile} of $K$.
 		\item For example the gaussian kernel has the profile $k(u) = \exp(-\frac{1}{2}u)$.
 		\item Nearly all popular kernel belong to this class of kernels.
 	\end{itemize}
@@ -164,6 +178,9 @@
 	\end{table}
 \end{frame}
 
+
+\subsection{Bandwidth}
+
 \begin{frame}{Bandwidth}
 	\begin{figure}
 		\includegraphics<1>[width=\textwidth]{figures/kernel-density-estimation-gaussian-50}
@@ -183,33 +200,101 @@
 \section{Mean Shift Clustering}
 
 
-\begin{frame}{History}
-\begin{itemize}
-	\item Introduced by \cite{Fukunaga.1975}
-	\item Popularized for computer vision tasks \cite{Comaniciu.2002} and \cite{Comaniciu.2003}. Image segmentation, image filtering and object tracking
-\end{itemize}
+\begin{frame}{Mean shift clustering}
+	\centering
+	\includegraphics[height=0.5\textheight]{figures/mean-shift-introduction}
+	\begin{itemize}
+		\item Modes of the kernel density estimate can be used to identify clusters.
+		\item Mode finding procedure results in a non-parametric clustering algorithm.
+	\end{itemize}
 \end{frame}
 
 
+\subsection{Algorithm}
+	
+\begin{frame}{The idea}
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/mean_shift_vector}
+	\begin{itemize}
+		\item Iteratively move point to ``high-density'' region.
+		\item Direction is determined by local neighborhood.f
+	\end{itemize}
+\end{frame}
+
+
+
 \begin{frame}{Locally weighted mean}
-	The weighted mean
+	The weighted mean is
 	\begin{align*}
 		\bm{\mu}^* = \frac{\sum_{i=1}^n \bm{x}_i w_i}{\sum_{i=1}^n w_i}
 	\end{align*}
+	\vspace*{10mm}
 	
-	The locally weighted mean has weights depending on the distance to a data point $\bm{x}$
+	The \textbf{locally weighted mean} has weights depending on the distance to a data point $\bm{x}$
 	\begin{align*}
 		\bm{\mu}^*(\bm{x}) = \frac{\sum_{i=1}^n \bm{x}_i\ g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)}{\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)}
 	\end{align*}
 \end{frame}
 
-
-\begin{frame}
+\begin{frame}{Mean shift procedure}
+	The \textbf{mean shift vector} is defined as
 	\begin{align*}
-		\bm{x}^{(t+1)} &= \frac{\sum_{i=1}^n \bm{x}_i\ g\left(\norm{(\bm{x}^{(t)} - \bm{x}_i) / h}^2 \right)}{\sum_{i=1}^n g\left(\norm{(\bm{x}^{(t)} - \bm{x}_i) / h}^2 \right)} & \text{for } i = 1, 2, ... \\[1em]
-		&= \bm{x}^{(t)} + \bm{m}\left(\bm{x}^{(t)}\right) &
+		\bm{m}\left(\bm{x}\right) = \bm{\mu}^*(\bm{x}) - \bm{x}
 	\end{align*}
+	
+	The \textbf{mean shift procedure} is
+	\begin{align*}
+		\bm{x}^{(t+1)} &= \bm{x}^{(t)} + \bm{m}\left(\bm{x}^{(t)}\right) & \text{for } i = 1, 2, ...
+	\end{align*}
+	
+	\vspace*{5mm}
+	\begin{itemize}
+		\item When the process converges we assign $\bm{x}$ to the mode $\bm{x}^{(\infty)}$.
+		\item Points at the same mode are considered to be in the same cluster.
+	\end{itemize}
 \end{frame}
+
+
+\subsection{Convergence}
+
+\begin{frame}{Convergence -- Gaussian kernel}
+\includegraphics<1>[width=\textwidth]{figures/iterations-gaussian/step-1}
+	\includegraphics<2>[width=\textwidth]{figures/iterations-gaussian/step-2}
+	\includegraphics<3>[width=\textwidth]{figures/iterations-gaussian/step-3}
+	\includegraphics<4>[width=\textwidth]{figures/iterations-gaussian/step-4}
+	\includegraphics<5>[width=\textwidth]{figures/iterations-gaussian/step-5}
+	\includegraphics<6>[width=\textwidth]{figures/iterations-gaussian/step-6}
+	\includegraphics<7>[width=\textwidth]{figures/iterations-gaussian/step-7}
+	\includegraphics<8>[width=\textwidth]{figures/iterations-gaussian/step-8}
+	\includegraphics<9>[width=\textwidth]{figures/iterations-gaussian/step-9}
+	\includegraphics<10>[width=\textwidth]{figures/iterations-gaussian/step-10}
+	\includegraphics<11>[width=\textwidth]{figures/iterations-gaussian/step-11}
+	\includegraphics<12>[width=\textwidth]{figures/iterations-gaussian/step-12}
+	\includegraphics<13>[width=\textwidth]{figures/iterations-gaussian/step-13}
+	\includegraphics<14>[width=\textwidth]{figures/iterations-gaussian/step-14}
+	\includegraphics<15>[width=\textwidth]{figures/iterations-gaussian/step-15}
+	\includegraphics<16>[width=\textwidth]{figures/iterations-gaussian/step-16}
+	\includegraphics<17>[width=\textwidth]{figures/iterations-gaussian/step-17}
+\end{frame}
+
+\begin{frame}{Convergence -- Uniform kernel}
+\includegraphics<1>[width=\textwidth]{figures/iterations-uniform/step-1}
+	\includegraphics<2>[width=\textwidth]{figures/iterations-uniform/step-2}
+	\includegraphics<3>[width=\textwidth]{figures/iterations-uniform/step-3}
+	\includegraphics<4>[width=\textwidth]{figures/iterations-uniform/step-4}
+	\includegraphics<5>[width=\textwidth]{figures/iterations-uniform/step-5}
+	\includegraphics<6>[width=\textwidth]{figures/iterations-uniform/step-6}
+	\includegraphics<7>[width=\textwidth]{figures/iterations-uniform/step-7}
+	\includegraphics<8>[width=\textwidth]{figures/iterations-uniform/step-8}
+	\includegraphics<9>[width=\textwidth]{figures/iterations-uniform/step-9}
+	\includegraphics<10>[width=\textwidth]{figures/iterations-uniform/step-10}
+	\includegraphics<11>[width=\textwidth]{figures/iterations-uniform/step-11}
+	\includegraphics<12>[width=\textwidth]{figures/iterations-uniform/step-12}
+	\includegraphics<13>[width=\textwidth]{figures/iterations-uniform/step-13}
+\end{frame}
+
+
+\subsection{Connection to KDE}
 
 \begin{frame}{Connecting the mean shift vector and kernel density estimation}
 	\begin{itemize}
@@ -220,44 +305,48 @@
 	\end{align*}
 \end{frame}
 
-
-\subsection{Convergence}
-
-\begin{frame}{Convergence -- Gaussian kernel}
-	\includegraphics<1>[width=\textwidth]{figures/iterations-gaussian/step-1}
-%	\includegraphics<2>[width=\textwidth]{figures/iterations-gaussian/step-2}
-%	\includegraphics<3>[width=\textwidth]{figures/iterations-gaussian/step-3}
-%	\includegraphics<4>[width=\textwidth]{figures/iterations-gaussian/step-4}
-%	\includegraphics<5>[width=\textwidth]{figures/iterations-gaussian/step-5}
-%	\includegraphics<6>[width=\textwidth]{figures/iterations-gaussian/step-6}
-%	\includegraphics<7>[width=\textwidth]{figures/iterations-gaussian/step-7}
-%	\includegraphics<8>[width=\textwidth]{figures/iterations-gaussian/step-8}
-%	\includegraphics<9>[width=\textwidth]{figures/iterations-gaussian/step-9}
-%	\includegraphics<10>[width=\textwidth]{figures/iterations-gaussian/step-10}
-%	\includegraphics<11>[width=\textwidth]{figures/iterations-gaussian/step-11}
-%	\includegraphics<12>[width=\textwidth]{figures/iterations-gaussian/step-12}
-%	\includegraphics<13>[width=\textwidth]{figures/iterations-gaussian/step-13}
-%	\includegraphics<14>[width=\textwidth]{figures/iterations-gaussian/step-14}
-%	\includegraphics<15>[width=\textwidth]{figures/iterations-gaussian/step-15}
-%	\includegraphics<16>[width=\textwidth]{figures/iterations-gaussian/step-16}
-%	\includegraphics<17>[width=\textwidth]{figures/iterations-gaussian/step-17}
+\begin{frame}{Connecting the mean shift vector and kernel density estimation}
+	\begin{align*}
+		\nabla \hat{f}_{h,K}(\bm{x}) &= \nabla \frac{c_{k,d}}{nh^d} \sum_{i=1}^n k\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\\
+		&= \frac{2c_{k,d}}{nh^{d+2}} \sum_{i=1}^n (\bm{x} - \bm{x}_i)k'\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\\
+		&= \frac{2c_{k,d}}{nh^{d+2}} \left[\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)\right] \left[\frac{\sum_{i=1}^n \bm{x}_i g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)}{\sum_{i=1}^n g\left(\norm{\frac{\bm{x} - \bm{x}_i}{h}}^2 \right)} - \bm{x}\right]\\
+		&= \frac{2c_{k,d}}{h^2c_{g,d}} \hat{f}_{h,G}(\bm{x}) \bm{m}(\bm{x})
+	\end{align*}
+	
+	With $g(u) = -k'(u)$ and $G(\bm{x}) = c_{g,d} g(\norm{\bm{x}}^2)$.
 \end{frame}
 
-\begin{frame}{Convergence -- Uniform kernel}
-	\includegraphics<1>[width=\textwidth]{figures/iterations-uniform/step-1}
-%	\includegraphics<2>[width=\textwidth]{figures/iterations-uniform/step-2}
-%	\includegraphics<3>[width=\textwidth]{figures/iterations-uniform/step-3}
-%	\includegraphics<4>[width=\textwidth]{figures/iterations-uniform/step-4}
-%	\includegraphics<5>[width=\textwidth]{figures/iterations-uniform/step-5}
-%	\includegraphics<6>[width=\textwidth]{figures/iterations-uniform/step-6}
-%	\includegraphics<7>[width=\textwidth]{figures/iterations-uniform/step-7}
-%	\includegraphics<8>[width=\textwidth]{figures/iterations-uniform/step-8}
-%	\includegraphics<9>[width=\textwidth]{figures/iterations-uniform/step-9}
-%	\includegraphics<10>[width=\textwidth]{figures/iterations-uniform/step-10}
-%	\includegraphics<11>[width=\textwidth]{figures/iterations-uniform/step-11}
-%	\includegraphics<12>[width=\textwidth]{figures/iterations-uniform/step-12}
-%	\includegraphics<13>[width=\textwidth]{figures/iterations-uniform/step-13}
+\begin{frame}{Connecting the mean shift vector and kernel density estimation}
+\centering
+\includegraphics[height=0.4\textheight]{figures/contour}
+	\begin{align*}
+		\bm{m}(\bm{x}) = \frac{h^2c_{g,d}}{2c_{k,d}} \frac{\nabla \hat{f}_{h,K}(\bm{x})}{\hat{f}_{h,G}(\bm{x})}
+	\end{align*}
+	\begin{itemize}
+		\item For the gaussian kernel $k(u) \propto -k'(u) = g(u)$ and therefore $K = G$.
+	\end{itemize}
 \end{frame}
+
+\begin{frame}{Connecting the mean shift vector and kernel density estimation}
+\begin{table}
+	\begin{center}
+		\begin{tabular}{r|r|r}
+			\textbf{Name} & $k(u)$ & $-k'(u)$ \\ \hline\hline
+			Uniform & $1$ & $0$ \\
+			Epanechnikov & $1 - u$ & $1$ \\
+			Biweight & $(1 - u)^2$ & $2 (1 - u)$ \\
+			Triweight & $(1 - u)^3$ & $3 (1 - u)^2$  \\
+			Gaussian & $\exp\left(-\frac{1}{2}u\right)$ & $\frac{1}{2}\exp\left(-\frac{1}{2}u\right)$
+		\end{tabular}
+	\end{center}
+	\vspace*{10mm}
+	\begin{itemize}
+		\item A kernel $K$ for which $-k'(u) = g(u)$, is called a \textbf{shadow} of $G$.
+		\item Calculating the mean shift vector $\bm{m}(\bm{x})$ with $G$ does calculate the gradient direction of the kernel density estimate with $K$ as kernel.
+	\end{itemize}
+\end{table}
+\end{frame}
+
 
 
 \subsection{Bandwidth effects}
@@ -283,7 +372,7 @@
 \end{figure}
 \end{frame}
 
-\begin{frame}{Middle bandwidth}
+\begin{frame}{Medium bandwidth}
 \begin{figure}	
 	\tiny
 	\begin{tabular}{c}
@@ -308,70 +397,58 @@
 \end{frame}
 
 
-\begin{frame}<0>{Advantages}
-% TODO: from text
-\begin{itemize}
-	\item One of the main benefits is that the algorithm makes no prior assumptions about the number and shape of the clusters. This allows complex clusters with non-convex shapes.
+\subsection{Speedup methods and discussion}
+
+\begin{frame}{Speedup methods}
+	The mean shift algorithm has computational complexity $\mathcal{O}(Tn^2)$, with $T$ being the number of iterations until convergence.
 	
-	\item Outliers do not affect the clustering of the other data points. As outliers lie in low density regions their weight assigned by the kernel is either zero or very small.
-	
-	\item The algorithm only has one parameter, the bandwidth. The bandwidth has a easily understood interpretation and determines the resulting cluster uniquely. That can be used to formulate functions dependent on the bandwidth, e.g. some clustering criteria.
-	
-	\item The cluster centroids can be interpreted as the modes of the estimated density function. That has the benefit that, ignoring the outliers, the centroids are ``typical'' data objects in that they are from a locally high-density environment.
-\end{itemize}
+	\begin{itemize}
+		\item \textbf{Parallelization} of iteration procedure. The trajectories are computational independent.
+		
+		\item \textbf{Sampling} of the dataset. Only perform it on a subset.
+		
+		\item \textbf{Bucketing} the dataset. Reduce number of possible positions.
+		
+		\item Use of \textbf{spatial data structures}. For kernels with compact support only the data points in the neighborhood are relevant.
+		
+		\item \textbf{Merging} of trajectories. When two trajectories get close to each other it is likely that they converge to the same point.
+	\end{itemize}
 \end{frame}
 
-\begin{frame}<0>{Disadvantages}
-% TODO: from text
-\begin{itemize}
-	\item The algorithm has complexity $\mathcal{O}(Tn^2)$, with $T$ being the number of iterations. This is especially problematic for large datasets.
-	
-	\item A problem originating from the underlying multivariate kernel density estimation is a poor scaling with the dimension of the feature space $d$.
-	
-	\item As we have already discussed in section \ref{sec:bandwidth-selection}, it is not easy to find a fitting bandwidth, especially in the multivariate case.
-	
-	\item Although the modes are local maxima, it is not guaranteed that they lie in a large density environment. This can easily be fixed by a post processing step in which low density modes are classified as outliers.
-	
-	\item In some use cases it is useful to specify the number of clusters a priori. This is only possible by searching for the desired number of clusters through changing the bandwidth.
-\end{itemize}
-\end{frame}
 
 \begin{frame}{Discussion}
-	\textbf{Advantages}
-	\begin{itemize}
-		\item No prior assumption on cluster shapes. Complex and non-convex shapes are possible
-		\item Only has one tuning parameter, the bandwidth
-		\item No restriction on number of clusters
-		%\item Cluster centroids are local maxima of the density
-		\item Outliers do not affect the clustering
-	\end{itemize}
-	\textbf{Disadvantages}
-	\begin{itemize}
-		\item Density estimation fails for high dimensions ($\approx d$ > 5)
-		\item Bad computational complexity $\mathcal{O}(Tn^2)$
-		\item Finding a good bandwidth is hard
-	\end{itemize}
-\end{frame}
-
-\begin{frame}<0>{Pros and Cons}
-% TODO: copied from other source
-	\textbf{Pros}
-	\begin{itemize}
-		\item Does not assume spherical clusters
-		\item Just a single parameter (window size)
-		\item Finds variable number of modes
-		\item Robust to outliers
-	\end{itemize}
-	\textbf{Cons}
-	\begin{itemize}
-		\item Output depends on window size
-		\item Computationally expensive
-		\item Does not scale well with dimension of feature space
-	\end{itemize}
+\textbf{Advantages}
+\begin{itemize}
+	\item No prior assumption on cluster shapes. Complex and non-convex shapes are possible.
+	\item Only has one tuning parameter, the bandwidth.
+	\item No restriction on number of clusters.
+	%\item Cluster centroids are local maxima of the density.
+	\item Outliers do not affect the clustering.
+\end{itemize}
+\textbf{Disadvantages}
+\begin{itemize}
+	\item Density estimation fails for high dimensions ($\approx d$ > 5).
+	\item Bad computational complexity $\mathcal{O}(Tn^2)$.
+	\item Finding a good bandwidth is hard.
+\end{itemize}
 \end{frame}
 
 
 \section{Application}
+
+\begin{frame}{Application}
+	\begin{itemize}
+		\item Introduced by \cite{Fukunaga.1975}, but popularized for computer vision tasks \cite{Comaniciu.2002} and \cite{Comaniciu.2003}.
+	\end{itemize}
+
+\begin{itemize}
+	\item Generic clustering algorithm.
+	\item Image segmentation, image filtering and object tracking.
+\end{itemize}
+\end{frame}
+
+
+\subsection{Image segmentation}
 
 \begin{frame}{Application -- Image segmentation}
 \begin{figure}	
@@ -383,6 +460,15 @@
 \begin{itemize}
 	\item Image data can be represented as data points. The pixels can be clustered and the clustering results in a segmentation of the original image.
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Preprocessing}
+	\begin{itemize}
+		\item \textbf{Image rescaling} for quicker convergence.
+		\item \textbf{Color space transformation}. The CIE 1976 L*,u*,v* color space is built to approximate a perceptually uniform color space.
+		\item \textbf{Feature standardization} with mean and standard deviation.
+		\item \textbf{Adding spatial features}. Adding $(x, y)$ pixel coordinates to pixel data.
+	\end{itemize}
 \end{frame}
 
 
@@ -408,7 +494,6 @@
 	\includegraphics[height=0.3\textheight]{{figures/kit-demo/scatter-plot-h=0.3-K=gaussian}.png} &   \includegraphics[height=0.3\textheight]{{figures/kit-demo/scatter-plot-h=0.4-K=gaussian}.png} \\
 	(c) $h = 0.3$ & (d) $h = 0.4$ \\[6pt]
 \end{tabular}
-\caption{caption}
 \end{figure}
 \end{frame}
 
@@ -439,29 +524,27 @@
 \end{frame}
 
 
+\begin{frame}{Results}
+	\centering
+	\includegraphics<1>[height=0.4\textheight]{figures/segmentation/segmentation-results-100_0109}
+	\includegraphics<1>[height=0.4\textheight]{figures/segmentation/segmentation-results-palovigna}
+	\includegraphics<2>[height=0.4\textheight]{figures/segmentation/segmentation-results-culzeancastle}
+	\includegraphics<2>[height=0.4\textheight]{figures/segmentation/segmentation-results-ireland_62_bg_061502}
+	\includegraphics<3>[height=0.4\textheight]{figures/segmentation/segmentation-results-dscf3583}
+	\includegraphics<3>[height=0.4\textheight]{figures/segmentation/segmentation-results-pic109250805856}
+\end{frame}
 
-%\section{Suchen und Sortieren}
-%\subsection{Insertionsort}
-%\begin{frame}
-%\begin{algorithm}[H]
-%	\caption{Euclid’s algorithm}\label{euclid}
-%	\begin{algorithmic}[1]
-%		\Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
-%		\State $r\gets a\bmod b$
-%		\While{$r\not=0$}\Comment{We have the answer if r is 0}
-%		\State $a\gets b$
-%		\State $b\gets r$
-%		\State $r\gets a\bmod b$
-%		\EndWhile\label{euclidendwhile}
-%		\State \textbf{return} $b$\Comment{The gcd is b}
-%		\EndProcedure
-%	\end{algorithmic}
-%\end{algorithm}
-%\end{frame}
+
+\begin{frame}{Limitations}
+\centering
+\includegraphics<1>[height=0.4\textheight]{figures/segmentation-bad-results/segmentation-results-b19objects118}
+\includegraphics<1>[height=0.4\textheight]{figures/segmentation-bad-results/segmentation-results-bbmf_lancaster_july_06}
+\includegraphics<2>[height=0.4\textheight]{figures/segmentation-bad-results/segmentation-results-dsc_0959}
+\includegraphics<2>[height=0.4\textheight]{figures/segmentation-bad-results/segmentation-results-dscn2154}
+\end{frame}
 
 
 \appendix
-\beginbackup
 
 \begin{frame}[allowframebreaks]{References}
 	%\printbibliography
@@ -470,9 +553,15 @@
 	\bibliography{../latex/KDEaMSC}
 \end{frame}
 
-\begin{frame}
-	\listoffigures
+\begin{frame}{Figures}
+	\begin{itemize}
+		\item ``KIT chemical faculty building'' picture. Copyright by KIT.
+		\item Segmentation pictures. ``segmentation evaluation database'' from \cite{Alpert.2012}.
+		\item All other illustrations were done by the author.
+	\end{itemize}
 \end{frame}
+
+\beginbackup
 
 \backupend
 

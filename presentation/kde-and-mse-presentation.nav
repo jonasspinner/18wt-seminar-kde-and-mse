@@ -14,71 +14,101 @@
 \headcommand {\beamer@subsectionentry {0}{2}{1}{4}{Definition}}
 \headcommand {\slideentry {2}{1}{1}{4/4}{Definition}{0}}
 \headcommand {\beamer@framepages {4}{4}}
-\headcommand {\beamer@subsectionpages {4}{4}}
-\headcommand {\beamer@subsectionentry {0}{2}{2}{5}{Kernel functions}}
-\headcommand {\slideentry {2}{2}{1}{5/5}{Kernel functions}{0}}
+\headcommand {\slideentry {2}{1}{2}{5/5}{Definition}{0}}
 \headcommand {\beamer@framepages {5}{5}}
-\headcommand {\slideentry {2}{2}{2}{6/6}{Kernel functions}{0}}
+\headcommand {\beamer@subsectionpages {4}{5}}
+\headcommand {\beamer@subsectionentry {0}{2}{2}{6}{Kernel functions}}
+\headcommand {\slideentry {2}{2}{1}{6/6}{Kernel functions}{0}}
 \headcommand {\beamer@framepages {6}{6}}
-\headcommand {\slideentry {2}{2}{3}{7/9}{Kernel functions}{0}}
-\headcommand {\beamer@framepages {7}{9}}
-\headcommand {\beamer@sectionpages {3}{9}}
-\headcommand {\beamer@subsectionpages {5}{9}}
-\headcommand {\sectionentry {3}{Mean Shift Clustering}{10}{Mean Shift Clustering}{0}}
-\headcommand {\slideentry {3}{0}{1}{10/10}{}{0}}
-\headcommand {\beamer@framepages {10}{10}}
-\headcommand {\slideentry {3}{0}{2}{11/11}{}{0}}
+\headcommand {\slideentry {2}{2}{2}{7/7}{Kernel functions}{0}}
+\headcommand {\beamer@framepages {7}{7}}
+\headcommand {\beamer@subsectionpages {6}{7}}
+\headcommand {\beamer@subsectionentry {0}{2}{3}{8}{Bandwidth}}
+\headcommand {\slideentry {2}{3}{1}{8/10}{Bandwidth}{0}}
+\headcommand {\beamer@framepages {8}{10}}
+\headcommand {\beamer@sectionpages {3}{10}}
+\headcommand {\beamer@subsectionpages {8}{10}}
+\headcommand {\sectionentry {3}{Mean Shift Clustering}{11}{Mean Shift Clustering}{0}}
+\headcommand {\slideentry {3}{0}{1}{11/11}{}{0}}
 \headcommand {\beamer@framepages {11}{11}}
-\headcommand {\slideentry {3}{0}{3}{12/12}{}{0}}
+\headcommand {\beamer@subsectionpages {11}{11}}
+\headcommand {\beamer@subsectionentry {0}{3}{1}{12}{Algorithm}}
+\headcommand {\slideentry {3}{1}{1}{12/12}{Algorithm}{0}}
 \headcommand {\beamer@framepages {12}{12}}
-\headcommand {\slideentry {3}{0}{4}{13/13}{}{0}}
+\headcommand {\slideentry {3}{1}{2}{13/13}{Algorithm}{0}}
 \headcommand {\beamer@framepages {13}{13}}
-\headcommand {\beamer@subsectionpages {10}{13}}
-\headcommand {\beamer@subsectionentry {0}{3}{1}{14}{Convergence}}
-\headcommand {\slideentry {3}{1}{1}{14/14}{Convergence}{0}}
+\headcommand {\slideentry {3}{1}{3}{14/14}{Algorithm}{0}}
 \headcommand {\beamer@framepages {14}{14}}
-\headcommand {\slideentry {3}{1}{2}{15/15}{Convergence}{0}}
-\headcommand {\beamer@framepages {15}{15}}
-\headcommand {\beamer@subsectionpages {14}{15}}
-\headcommand {\beamer@subsectionentry {0}{3}{2}{16}{Bandwidth effects}}
-\headcommand {\slideentry {3}{2}{1}{16/16}{Bandwidth effects}{0}}
-\headcommand {\beamer@framepages {16}{16}}
-\headcommand {\slideentry {3}{2}{2}{17/17}{Bandwidth effects}{0}}
-\headcommand {\beamer@framepages {17}{17}}
-\headcommand {\slideentry {3}{2}{3}{18/18}{Bandwidth effects}{0}}
-\headcommand {\beamer@framepages {18}{18}}
-\headcommand {\slideentry {3}{2}{4}{19/19}{Bandwidth effects}{0}}
-\headcommand {\beamer@framepages {19}{19}}
-\headcommand {\slideentry {3}{2}{5}{20/20}{Bandwidth effects}{0}}
-\headcommand {\beamer@framepages {20}{20}}
-\headcommand {\beamer@sectionpages {10}{20}}
-\headcommand {\beamer@subsectionpages {16}{20}}
-\headcommand {\sectionentry {4}{Application}{21}{Application}{0}}
-\headcommand {\slideentry {4}{0}{1}{21/21}{}{0}}
-\headcommand {\beamer@framepages {21}{21}}
-\headcommand {\slideentry {4}{0}{2}{22/22}{}{0}}
-\headcommand {\beamer@framepages {22}{22}}
-\headcommand {\slideentry {4}{0}{3}{23/23}{}{0}}
-\headcommand {\beamer@framepages {23}{23}}
-\headcommand {\slideentry {4}{0}{4}{24/24}{}{0}}
-\headcommand {\beamer@framepages {24}{24}}
-\headcommand {\slideentry {4}{0}{5}{25/25}{}{0}}
-\headcommand {\beamer@framepages {25}{25}}
-\headcommand {\gdef \insertmainframenumber {26}}
+\headcommand {\beamer@subsectionpages {12}{14}}
+\headcommand {\beamer@subsectionentry {0}{3}{2}{15}{Convergence}}
+\headcommand {\slideentry {3}{2}{1}{15/31}{Convergence}{0}}
+\headcommand {\beamer@framepages {15}{31}}
+\headcommand {\slideentry {3}{2}{2}{32/44}{Convergence}{0}}
+\headcommand {\beamer@framepages {32}{44}}
+\headcommand {\beamer@subsectionpages {15}{44}}
+\headcommand {\beamer@subsectionentry {0}{3}{3}{45}{Connection to KDE}}
+\headcommand {\slideentry {3}{3}{1}{45/45}{Connection to KDE}{0}}
+\headcommand {\beamer@framepages {45}{45}}
+\headcommand {\slideentry {3}{3}{2}{46/46}{Connection to KDE}{0}}
+\headcommand {\beamer@framepages {46}{46}}
+\headcommand {\slideentry {3}{3}{3}{47/47}{Connection to KDE}{0}}
+\headcommand {\beamer@framepages {47}{47}}
+\headcommand {\slideentry {3}{3}{4}{48/48}{Connection to KDE}{0}}
+\headcommand {\beamer@framepages {48}{48}}
+\headcommand {\beamer@subsectionpages {45}{48}}
+\headcommand {\beamer@subsectionentry {0}{3}{4}{49}{Bandwidth effects}}
+\headcommand {\slideentry {3}{4}{1}{49/49}{Bandwidth effects}{0}}
+\headcommand {\beamer@framepages {49}{49}}
+\headcommand {\slideentry {3}{4}{2}{50/50}{Bandwidth effects}{0}}
+\headcommand {\beamer@framepages {50}{50}}
+\headcommand {\slideentry {3}{4}{3}{51/51}{Bandwidth effects}{0}}
+\headcommand {\beamer@framepages {51}{51}}
+\headcommand {\slideentry {3}{4}{4}{52/52}{Bandwidth effects}{0}}
+\headcommand {\beamer@framepages {52}{52}}
+\headcommand {\beamer@subsectionpages {49}{52}}
+\headcommand {\beamer@subsectionentry {0}{3}{5}{53}{Speedup methods and discussion}}
+\headcommand {\slideentry {3}{5}{1}{53/53}{Speedup methods and discussion}{0}}
+\headcommand {\beamer@framepages {53}{53}}
+\headcommand {\slideentry {3}{5}{2}{54/54}{Speedup methods and discussion}{0}}
+\headcommand {\beamer@framepages {54}{54}}
+\headcommand {\beamer@sectionpages {11}{54}}
+\headcommand {\beamer@subsectionpages {53}{54}}
+\headcommand {\sectionentry {4}{Application}{55}{Application}{0}}
+\headcommand {\slideentry {4}{0}{1}{55/55}{}{0}}
+\headcommand {\beamer@framepages {55}{55}}
+\headcommand {\beamer@subsectionpages {55}{55}}
+\headcommand {\beamer@subsectionentry {0}{4}{1}{56}{Image segmentation}}
+\headcommand {\slideentry {4}{1}{1}{56/56}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {56}{56}}
+\headcommand {\slideentry {4}{1}{2}{57/57}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {57}{57}}
+\headcommand {\slideentry {4}{1}{3}{58/58}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {58}{58}}
+\headcommand {\slideentry {4}{1}{4}{59/59}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {59}{59}}
+\headcommand {\slideentry {4}{1}{5}{60/60}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {60}{60}}
+\headcommand {\slideentry {4}{1}{6}{61/61}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {61}{61}}
+\headcommand {\slideentry {4}{1}{7}{62/64}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {62}{64}}
+\headcommand {\slideentry {4}{1}{8}{65/66}{Image segmentation}{0}}
+\headcommand {\beamer@framepages {65}{66}}
+\headcommand {\gdef \insertmainframenumber {33}}
 \headcommand {\partentry {Anhang}{1}}
-\headcommand {\beamer@partpages {1}{25}}
-\headcommand {\beamer@sectionpages {21}{25}}
-\headcommand {\beamer@subsectionpages {21}{25}}
-\headcommand {\beamer@appendixpages {26}}
-\headcommand {\beamer@sectionpages {26}{25}}
-\headcommand {\beamer@subsectionpages {26}{25}}
-\headcommand {\sectionentry {5}{Literatur}{26}{Literatur}{1}}
-\headcommand {\slideentry {5}{0}{0}{26/26}{}{1}}
-\headcommand {\beamer@framepages {26}{26}}
-\headcommand {\slideentry {5}{0}{1}{27/27}{}{1}}
-\headcommand {\beamer@framepages {27}{27}}
-\headcommand {\beamer@partpages {26}{27}}
-\headcommand {\beamer@subsectionpages {26}{27}}
-\headcommand {\beamer@sectionpages {26}{27}}
-\headcommand {\beamer@documentpages {27}}
-\headcommand {\gdef \inserttotalframenumber {26}}
+\headcommand {\beamer@partpages {1}{66}}
+\headcommand {\beamer@sectionpages {55}{66}}
+\headcommand {\beamer@subsectionpages {56}{66}}
+\headcommand {\beamer@appendixpages {67}}
+\headcommand {\beamer@sectionpages {67}{66}}
+\headcommand {\beamer@subsectionpages {67}{66}}
+\headcommand {\sectionentry {5}{Literatur}{67}{Literatur}{1}}
+\headcommand {\slideentry {5}{0}{0}{67/67}{}{1}}
+\headcommand {\beamer@framepages {67}{67}}
+\headcommand {\slideentry {5}{0}{1}{68/68}{}{1}}
+\headcommand {\beamer@framepages {68}{68}}
+\headcommand {\beamer@partpages {67}{68}}
+\headcommand {\beamer@subsectionpages {67}{68}}
+\headcommand {\beamer@sectionpages {67}{68}}
+\headcommand {\beamer@documentpages {68}}
+\headcommand {\gdef \inserttotalframenumber {35}}
